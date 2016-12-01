@@ -1,10 +1,16 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+File: face_verification.py
+Description: main module for Face Verification in SHK.
+"""
 import util
 import StringIO
 import cv2
-import numpy as np
 
 _key = util.SubscriptionKey.get()
 _image_format = ".jpg"
+_person_group_id = "prueba"
 
 face_cascade = cv2.CascadeClassifier("HaarCascades/face.xml")
 video_capture = cv2.VideoCapture(0)
@@ -30,13 +36,24 @@ def async_detect(path):
 
     global detections
     faces = util.CF.face.detect(path)
-
-    if faces is not None:
-
-        print(faces[0]["faceId"])
-
     # Close object and discard memory buffer
     path.close()
+
+    face_ids = []
+    if faces is not None:
+        for face in faces:
+            face_ids.append(face["faceId"])
+
+    print face_ids
+
+    res = util.CF.face.identify(face_ids, _person_group_id)
+    for entry in res:
+        face_id = entry['faceId']
+        if entry['candidates']:
+            person_id = entry['candidates'][0]['personId']
+            print "Found " + person_id
+        else:
+            print "Not found"
     
     detections = False
 
