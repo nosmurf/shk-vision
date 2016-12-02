@@ -22,6 +22,8 @@ class FaceVerification(object):
         self.person_group_id = util.PersonGroupId.get()
         # Haar cascade to detect faces in OpenCV
         self.openCV_face_detector = cv2.CascadeClassifier(os.path.dirname(os.path.abspath(__file__)) + "/HaarCascades/face.xml")
+        # Minimal time between requests to Microsoft API in seconds
+        self.MicrosoftAPIRateLimit = 6
 
     def detect_face_open_cv(self, image):
         """Detects if there are any faces in the image"""
@@ -48,13 +50,16 @@ class FaceVerification(object):
             for face in faces:
                 detected_faces_ids.append(face["faceId"])
 
-        # Check if any of the faces detected in the image is authorized to enter
-        identification_result = util.CF.face.identify(detected_faces_ids, self.person_group_id)
-        # For each of the sent faces, check if it is one of the autorized persons
-        for entry in identification_result:
-            if entry['candidates']:
-                authorized_person_id = entry['candidates'][0]['personId']
-                identified_persons_ids.append(authorized_person_id)
+        #If there is any detected face in image
+        if len(detected_faces_ids) > 0:
+            # Check if any of the faces detected in the image is authorized to enter
+            identification_result = util.CF.face.identify(detected_faces_ids, self.person_group_id)
+            # For each of the sent faces, check if it is one of the autorized persons
+            for entry in identification_result:
+                if entry['candidates']:
+                    authorized_person_id = entry['candidates'][0]['personId']
+                    identified_persons_ids.append(authorized_person_id)
+
         return identified_persons_ids
 
     def run(self):
@@ -83,6 +88,9 @@ class FaceVerification(object):
                 identified_persons_ids = self.face_verification(image_buffer)
                 # Close object and discard memory buffer
                 image_buffer.close()
+                #Avoid passing Microsoft API rate limit
+                if time.time() - actual_time < self.MicrosoftAPIRateLimit:
+                    time.sleep(self.MicrosoftAPIRateLimit - (time.time() - actual_time))
 
             actual_time = time.time()
 

@@ -14,6 +14,13 @@ VERIFICATION_TIME = 20
 if __name__ == "__main__":
 
     app = FV.FaceVerification(VERIFICATION_TIME);
-    idenfitied_persons = app.run();
-    print "Identified :"
-    print idenfitied_persons
+    identified_persons = app.run();
+
+    if len(identified_persons) > 0:
+    	print "Identified :"
+    	for person_id in identified_persons:
+    		print "* " + person_id
+    else:
+    	print "Nobody indentified"
+
+    
