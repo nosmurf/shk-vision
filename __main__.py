@@ -6,7 +6,6 @@ Description: main script for Face verification.
 """
 
 import face.face_verification as FV
-import face.util as util
 
 #Time executing verification script in seconds
 VERIFICATION_TIME = 20
