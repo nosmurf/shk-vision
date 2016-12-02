@@ -9,10 +9,15 @@ import StringIO
 import cv2
 import time
 import os
+from camera import Camera
 
 class FaceVerification(object):
     """Verifies whether the user is allowed to access or not"""
+
     IMAGE_FORMAT = ".jpg"
+    IMG_WIDTH = 640
+    IMG_HEIGHT = 480
+
     def __init__(self, running_time):
         super(FaceVerification, self).__init__()
         util.SubscriptionKey.get()
@@ -22,8 +27,6 @@ class FaceVerification(object):
         self.person_group_id = util.PersonGroupId.get()
         # Haar cascade to detect faces in OpenCV
         self.openCV_face_detector = cv2.CascadeClassifier(os.path.dirname(os.path.abspath(__file__)) + "/HaarCascades/face.xml")
-        # Minimal time between requests to Microsoft API in seconds
-        self.MicrosoftAPIRateLimit = 6
 
     def detect_face_open_cv(self, image):
         """Detects if there are any faces in the image"""
@@ -64,7 +67,9 @@ class FaceVerification(object):
 
     def run(self):
         "Loop which tries to identify authorized persons in video which comes from camera during time setted in self.running_time"
-        video_capture = cv2.VideoCapture(0)
+
+        camera_raspberry = Camera(self.IMG_WIDTH, self.IMG_HEIGHT)
+
         identified_persons_ids = []
 
         start_time = time.time()
@@ -73,8 +78,7 @@ class FaceVerification(object):
         # Capture video and try to detect faces in each frame. If any is detected, verify if it's authorized
         while actual_time - start_time < self.running_time and len(identified_persons_ids) < 1:
             # Capture frame-by-frame
-            ret, frame = video_capture.read()
-            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            gray_frame = camera_raspberry.capture_gray()
 
             # if openCV detects a face, send to Microsoft API
             if self.detect_face_open_cv(gray_frame):
@@ -88,9 +92,6 @@ class FaceVerification(object):
                 identified_persons_ids = self.face_verification(image_buffer)
                 # Close object and discard memory buffer
                 image_buffer.close()
-                #Avoid passing Microsoft API rate limit
-                if time.time() - actual_time < self.MicrosoftAPIRateLimit:
-                    time.sleep(self.MicrosoftAPIRateLimit - (time.time() - actual_time))
 
             actual_time = time.time()
 

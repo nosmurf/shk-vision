@@ -8,8 +8,6 @@ Description: util module for Face Verification in SHK.
 from threading import Thread
 import os.path
 
-import wx
-
 import cognitive_face as CF
 
 UTIL_DIR = os.path.dirname(os.path.abspath(__file__)) + '/'
