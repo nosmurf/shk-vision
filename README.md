@@ -10,7 +10,7 @@ We are using Raspberry PI with camera for do this.
 
 # Hardware requisites
 
-This project has to be executed in a **Raspberry Pi** with the **picamera** module
+This project has to be executed in a **Raspberry Pi** with the **picamera** module. Moreover, it has to be conected by USB with an **Arduino** running the code in [shk-Arduino](https://github.com/nosmurf/shk-arduino)
 
 # Install dependencies
 
