@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 File: face_verification.py
-Description: main module for Face Verification in SHK.
+Description: module for Face Verification in SHK.
 """
 import util
 import StringIO
@@ -20,11 +20,11 @@ class FaceVerification(object):
 
     def __init__(self, running_time):
         super(FaceVerification, self).__init__()
-        util.SubscriptionKey.get()
+        util.MSFaceApiKey.get()
         # Time to run detection
         self.running_time = running_time
         # Person group ID of authorized persons in Microsoft API
-        self.person_group_id = util.PersonGroupId.get()
+        self.person_group_id = util.PersonGroupId.get().lower()
         # Haar cascade to detect faces in OpenCV
         self.openCV_face_detector = cv2.CascadeClassifier(os.path.dirname(os.path.abspath(__file__)) + "/HaarCascades/face.xml")
 
@@ -95,4 +95,5 @@ class FaceVerification(object):
 
             actual_time = time.time()
 
+        camera_raspberry.close()
         return identified_persons_ids

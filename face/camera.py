@@ -24,3 +24,7 @@ class Camera(object):
         frame = frame.reshape((self.height, self.width, self.img_channels))
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         return gray_frame
+
+    def close(self):
+        "Closes PiCamera instance"
+        self.camera.close()
