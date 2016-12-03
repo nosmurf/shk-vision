@@ -20,6 +20,7 @@ To use the software, it's necessary to install OpenCV for Python, Python SDK for
 sudo apt-get install ipython python-opencv python-numpy python-pip
 sudo pip install cognitive_face
 sudo pip install "picamera[array]"
+sudo pip install pyrebase
 ```
 
 # Execution
