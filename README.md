@@ -17,10 +17,12 @@ This project has to be executed in a **Raspberry Pi** with the **picamera** modu
 To use the software, it's necessary to install OpenCV for Python, Python SDK for the Microsoft Face API and PiCamera module:
 
 ```bash
-sudo apt-get install ipython python-opencv python-numpy python-pip
+sudo apt-get install ipython python-opencv python-numpy python-dev
+sudo easy_install pip
 sudo pip install cognitive_face
 sudo pip install "picamera[array]"
 sudo pip install pyrebase
+sudo pip install pyserial
 ```
 
 # Execution
@@ -41,7 +43,8 @@ sudo pip install pyrebase
 
 2. Go to shk-vision\face\config and:
   1. Write Microsoft Face API key in subscription.txt
-  2. Write the Person Group ID in PersonGroupId.txt
+  2. Write the Microsoft Person Group ID in PersonGroupId.txt
+  3. Write configuration to access Firebase in Firebase.json
   
 3. Go to the folder which contains the cloned repo
 
