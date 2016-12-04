@@ -29,14 +29,16 @@ class HashVerification(object):
         # Key to decrypt NFC tag
         NFC_key = self.db.child("groups").child(self.person_group_id).child("key").get(self.db_access_token).val()
 
-        hash_object = hashlib.sha384(self.person_group_id)
-        # Hash that Arduino should send (read from the NFC tag) 
-        hash_person_group_id = hash_object.hexdigest()
-        self.ser.write(NFC_key.encode())
-        nfc_hash = self.ser.readline().strip()
+        all_group_users = self.db.child("groups").child(self.person_group_id).child("users").get(self.db_access_token)
+        user_id_hashes = {}
+        for user in all_group_users.each():
+            # Arduino should send one of theese hashes (read from the NFC tag) 
+            user_id_hashes[hashlib.sha384(user.key()).hexdigest()] = user.key()
 
-        #if nfc_hash == hash_person_group_id:
-        if nfc_hash == "99":
-            return True
+        self.ser.write(NFC_key.encode())
+        nfc_hash = self.ser.readline().strip().lower()
+
+        if nfc_hash in user_id_hashes:
+            return user_id_hashes[nfc_hash]
         else:
-            return False
+            return None
